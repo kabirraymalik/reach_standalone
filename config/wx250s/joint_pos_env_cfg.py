@@ -8,7 +8,6 @@ import os
 from dataclasses import MISSING
 
 import isaaclab.sim as sim_utils
-import os
 from isaaclab.assets import ArticulationCfg, AssetBaseCfg
 from isaaclab.envs import ManagerBasedRLEnvCfg
 from isaaclab.managers import ActionTermCfg as ActionTerm
@@ -23,12 +22,9 @@ from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
-
-import isaaclab_tasks.manager_based.manipulation.reach.mdp as mdp
-
-import isaaclab.sim as sim_utils
-from isaaclab.actuators import ImplicitActuatorCfg
+import mdp
 from isaaclab.assets.articulation import ArticulationCfg
+from isaaclab.actuators import ImplicitActuatorCfg
 
 @configclass
 class ReachSceneCfg(InteractiveSceneCfg):
@@ -42,7 +38,6 @@ class ReachSceneCfg(InteractiveSceneCfg):
     )
 
     """
-
     table = AssetBaseCfg(
         prim_path="{ENV_REGEX_NS}/Table",
         spawn=sim_utils.UsdFileCfg(
@@ -115,6 +110,8 @@ class ObservationsCfg:
         joint_pos = ObsTerm(func=mdp.joint_pos_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
         joint_vel = ObsTerm(func=mdp.joint_vel_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
         pose_command = ObsTerm(func=mdp.generated_commands, params={"command_name": "ee_pose"})
+        #strawberry_location = ObsTerm(func=mdp.)
+        #TODO: check franka open drawer and other examples for mdp observation functions
         actions = ObsTerm(func=mdp.last_action)
 
         def __post_init__(self):
@@ -167,6 +164,11 @@ class RewardsCfg:
         weight=-0.0001,
         params={"asset_cfg": SceneEntityCfg("robot")},
     )
+
+    #TODO: penalty for delta v between target and end effector
+    #TODO: reward for centered target
+    #TODO: penalty for missing target
+    #TODO: reward for large target in frame
 
 
 @configclass
@@ -256,6 +258,7 @@ wx250s_CFG = ArticulationCfg(
         ),
     },
 )
+
 """Configuration of wx250s arm using implicit actuator models."""
 
 @configclass
