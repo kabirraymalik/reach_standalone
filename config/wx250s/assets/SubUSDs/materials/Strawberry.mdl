@@ -1,0 +1,42 @@
+mdl 1.4;
+
+import ::OmniPBR::OmniPBR;
+import ::tex::gamma_mode;
+import ::state::normal;
+
+export material Strawberry(*)
+ = OmniPBR::OmniPBR(
+    diffuse_color_constant: color(1.f, 1.f, 1.f),
+    diffuse_texture: texture_2d("../textures/Strawberry/Strawberry_Full_Basecolor.png" /* tag 2783, version 372062512 */, ::tex::gamma_srgb),
+    albedo_desaturation: 0.f,
+    albedo_add: 0.f,
+    albedo_brightness: 1.f,
+    diffuse_tint: color(1.f, 1.f, 1.f),
+    reflection_roughness_constant: 1.f,
+    reflection_roughness_texture_influence: 1.f,
+    reflectionroughness_texture: texture_2d("../textures/Strawberry/Strawberry_Full_Roughness.png" /* tag 2786, version 2507354591 */, ::tex::gamma_linear),
+    metallic_constant: 0.f,
+    metallic_texture_influence: 1.f,
+    metallic_texture: texture_2d("../textures/Strawberry/Strawberry_Full_Metallic.png" /* tag 2789, version 39410124 */, ::tex::gamma_linear),
+    specular_level: 0.5f,
+    enable_ORM_texture: false,
+    ORM_texture: texture_2d(),
+    ao_to_diffuse: 1.f,
+    ao_texture: texture_2d("../textures/Strawberry/Strawberry_Full_AO.png" /* tag 2795, version 873820539 */, ::tex::gamma_linear),
+    enable_emission: false,
+    emissive_color: color(0.f, 0.f, 0.f),
+    emissive_mask_texture: texture_2d(),
+    emissive_intensity: 40.f,
+    bump_factor: 1.f,
+    normalmap_texture: texture_2d("../textures/Strawberry/Strawberry_Full_Normal.png" /* tag 2792, version 1366428205 */, ::tex::gamma_linear),
+    detail_bump_factor: 0.300000012f,
+    detail_normalmap_texture: texture_2d(),
+    project_uvw: false,
+    world_or_object: false,
+    uv_space_index: 0,
+    texture_translate: float2(0.f),
+    texture_rotate: 0.f,
+    texture_scale: float2(1.f),
+    detail_texture_translate: float2(0.f),
+    detail_texture_rotate: 0.f,
+    detail_texture_scale: float2(1.f));
