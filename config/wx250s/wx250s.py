@@ -6,7 +6,8 @@ import os
 
 wx250s_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=os.getcwd()+"/config/wx250s/wx250s.usd",
+        #usd_path=os.getcwd()+"/config/wx250s/wx250s.usd",
+        usd_path=os.getcwd()+"/config/wx250s_vision/wx250s.usd",
         activate_contact_sensors = False,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,

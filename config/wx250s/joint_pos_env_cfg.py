@@ -8,7 +8,7 @@ import os
 from dataclasses import MISSING
 
 import isaaclab.sim as sim_utils
-from isaaclab.assets import ArticulationCfg, AssetBaseCfg
+from isaaclab.assets import ArticulationCfg, AssetBaseCfg, RigidObject, RigidObjectCfg
 from isaaclab.envs import ManagerBasedRLEnvCfg
 from isaaclab.managers import ActionTermCfg as ActionTerm
 from isaaclab.managers import CurriculumTermCfg as CurrTerm
@@ -25,6 +25,7 @@ from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 import mdp
 from isaaclab.assets.articulation import ArticulationCfg
 from isaaclab.actuators import ImplicitActuatorCfg
+from config.wx250s.wx250s import wx250s_CFG
 
 @configclass
 class ReachSceneCfg(InteractiveSceneCfg):
@@ -45,6 +46,20 @@ class ReachSceneCfg(InteractiveSceneCfg):
         ),
         init_state=AssetBaseCfg.InitialStateCfg(pos=(0.55, 0.0, 0.0), rot=(0.70711, 0.0, 0.0, 0.70711)),
     )
+    
+    
+    strawberry_cfg = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/Strawberry",
+        spawn=sim_utils.SphereCfg(
+            radius=0.1,
+            rigid_props=sim_utils.RigidBodyPropertiesCfg(),
+            mass_props=sim_utils.MassPropertiesCfg(mass=1.0),
+            collision_props=sim_utils.CollisionPropertiesCfg(),
+            visual_material=sim_utils.PreviewSurfaceCfg(diffuse_color=(1.0, 0.0, 0.0), metallic=0.2),
+        ),
+        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.8, 0, -1.4), rot=(0.5, 0.5, 0.5, 0.5)),
+    )
+    strawberry = RigidObject(cfg=strawberry_cfg)
 
     """
     strawberry = AssetBaseCfg(
@@ -54,7 +69,7 @@ class ReachSceneCfg(InteractiveSceneCfg):
         ),
         init_state=AssetBaseCfg.InitialStateCfg(pos=(0.8, 0, -1.4), rot=(0.5, 0.5, 0.5, 0.5)),
     )
-
+    
     # robots
     robot: ArticulationCfg = MISSING
 
@@ -76,9 +91,9 @@ class CommandsCfg:
 
     ee_pose = mdp.UniformPoseCommandCfg(
         asset_name="robot",
-        body_name=MISSING,
+        body_name="strawberry",
         resampling_time_range=(4.0, 4.0),
-        debug_vis=True,
+        debug_vis=False,
         ranges=mdp.UniformPoseCommandCfg.Ranges(
             pos_x=(0.35, 0.65),
             pos_y=(-0.2, 0.2),
@@ -226,41 +241,6 @@ class ReachEnvCfg(ManagerBasedRLEnvCfg):
 # Environment configuration
 ##
 
-wx250s_CFG = ArticulationCfg(
-    spawn=sim_utils.UsdFileCfg(
-        usd_path=os.getcwd()+"/config/wx250s/wx250s.usd",
-        activate_contact_sensors = False,
-        rigid_props=sim_utils.RigidBodyPropertiesCfg(
-            disable_gravity=False,
-            max_depenetration_velocity=5.0,
-        ),
-        articulation_props=sim_utils.ArticulationRootPropertiesCfg(
-            enabled_self_collisions=True, solver_position_iteration_count=8, solver_velocity_iteration_count=0
-        ),
-    ),
-    init_state=ArticulationCfg.InitialStateCfg(
-        joint_pos={
-            "waist": 0.0,
-            "shoulder": 0.0,
-            "elbow": 0.0,
-            "forearm_roll": 0.0,
-            "wrist_angle": 0.0,
-            "wrist_rotate": 0.0,
-        },
-    ),
-    actuators={
-        "arm": ImplicitActuatorCfg(
-            joint_names_expr=[".*"],
-            velocity_limit=100.0,
-            effort_limit=87.0,
-            stiffness=5.0,
-            damping=0.5,
-        ),
-    },
-)
-
-"""Configuration of wx250s arm using implicit actuator models."""
-
 @configclass
 class wx250sReachEnvCfg(ReachEnvCfg):
     def __post_init__(self):
@@ -269,6 +249,9 @@ class wx250sReachEnvCfg(ReachEnvCfg):
 
         # switch robot to wx250s
         self.scene.robot = wx250s_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        print("EE POSEEEE + +++=======================================================\n")
+        print(self.commands.ee_pose)
+        #self.scene.cone_object.write_root_com_pose_to_sim(self.commands.ee_pose)
         # override events
         self.events.reset_robot_joints.params["position_range"] = (0.75, 1.25)
         # override rewards
