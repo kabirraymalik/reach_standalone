@@ -67,7 +67,8 @@ class ReachSceneCfg(InteractiveSceneCfg):
         spawn=sim_utils.UsdFileCfg(
             usd_path=os.getcwd()+"/config/wx250s/assets/Cartoon_Strawberry.usd",
         ),
-        init_state=AssetBaseCfg.InitialStateCfg(pos=(0.8, 0, -1.4), rot=(0.5, 0.5, 0.5, 0.5)),
+        init_state=AssetBaseCfg.InitialStateCfg(pos=(0.5, 0, -1.4), rot=(0.5, 0.5, 0.5, 0.5)),
+        #init_state=AssetBaseCfg.InitialStateCfg(pos=(0.8, 0, -1.4), rot=(0.5, 0.5, 0.5, 0.5)),
     )
     
     # robots
@@ -125,7 +126,6 @@ class ObservationsCfg:
         joint_pos = ObsTerm(func=mdp.joint_pos_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
         joint_vel = ObsTerm(func=mdp.joint_vel_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
         pose_command = ObsTerm(func=mdp.generated_commands, params={"command_name": "ee_pose"})
-        #strawberry_location = ObsTerm(func=mdp.)
         #TODO: check franka open drawer and other examples for mdp observation functions
         actions = ObsTerm(func=mdp.last_action)
 
@@ -154,6 +154,11 @@ class EventCfg:
 @configclass
 class RewardsCfg:
     """Reward terms for the MDP."""
+    #TODO: biggest emphasis: x-y target velocity penalty (frame-to-frame pixel displacement of target bounding box)
+    #TODO: penalty for delta v between target and end effector
+    #TODO: reward for centered target
+    #TODO: penalty for missing target
+    #TODO: reward for large target in frame
 
     # task terms
     end_effector_position_tracking = RewTerm(
@@ -179,11 +184,6 @@ class RewardsCfg:
         weight=-0.0001,
         params={"asset_cfg": SceneEntityCfg("robot")},
     )
-
-    #TODO: penalty for delta v between target and end effector
-    #TODO: reward for centered target
-    #TODO: penalty for missing target
-    #TODO: reward for large target in frame
 
 
 @configclass
